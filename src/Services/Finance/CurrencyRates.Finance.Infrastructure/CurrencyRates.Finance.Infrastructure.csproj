@@ -2,4 +2,12 @@
   <ItemGroup>
     <ProjectReference Include="../CurrencyRates.Finance.Application/CurrencyRates.Finance.Application.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" />
+    <PackageReference Include="Grpc.Net.Client" />
+    <PackageReference Include="Grpc.Tools" PrivateAssets="all" />
+    <Protobuf Include="../../../../contracts/identity/v1/session.proto"
+              ProtoRoot="../../../../contracts" Link="Protos/identity/v1/session.proto"
+              GrpcServices="Client" />
+  </ItemGroup>
 </Project>

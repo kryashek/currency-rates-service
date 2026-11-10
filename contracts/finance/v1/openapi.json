@@ -1,0 +1,682 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Currency Rates Finance HTTP API",
+    "version": "1.0.0",
+    "description": "Agreed HTTP contract. Business endpoints are not implemented by the scaffold."
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/finance/currencies": {
+      "get": {
+        "operationId": "ListCurrencies",
+        "summary": "ListCurrencies",
+        "description": "Only currencies in the current snapshot. Empty before first import. RUB is not automatically added. Sorted by code, then currencyId; no pagination. JWT and an uncached Identity session check are required.",
+        "responses": {
+          "200": {
+            "description": "Current data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CurrencyResponse"
+                  }
+                },
+                "example": [
+                  {
+                    "currencyId": "R01235",
+                    "code": "USD",
+                    "name": "Доллар США"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "authentication_required, invalid_token, invalid_session",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "authentication_required",
+              "invalid_token",
+              "invalid_session"
+            ],
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Bearer"
+              }
+            }
+          },
+          "500": {
+            "description": "internal_error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "internal_error"
+            ]
+          },
+          "503": {
+            "description": "identity_unavailable, service_unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "identity_unavailable",
+              "service_unavailable"
+            ]
+          }
+        }
+      }
+    },
+    "/api/finance/favorites": {
+      "get": {
+        "operationId": "ListFavorites",
+        "summary": "ListFavorites",
+        "description": "Only the verified current user's favorites, including unavailable currencies. An empty collection returns []. User identity is never accepted from an input owner field. Sorted by code, then currencyId; no pagination. JWT and an uncached Identity session check are required.",
+        "responses": {
+          "200": {
+            "description": "Current data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FavoriteResponse"
+                  }
+                },
+                "example": [
+                  {
+                    "currencyId": "R01235",
+                    "code": "USD",
+                    "name": "Доллар США",
+                    "isAvailable": true
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "authentication_required, invalid_token, invalid_session",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "authentication_required",
+              "invalid_token",
+              "invalid_session"
+            ],
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Bearer"
+              }
+            }
+          },
+          "500": {
+            "description": "internal_error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "internal_error"
+            ]
+          },
+          "503": {
+            "description": "identity_unavailable, service_unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "identity_unavailable",
+              "service_unavailable"
+            ]
+          }
+        }
+      }
+    },
+    "/api/finance/rates": {
+      "get": {
+        "operationId": "ListFavoriteRates",
+        "summary": "ListFavoriteRates",
+        "description": "Only current-user favorites. Header and items come from one committed snapshot. Empty favorites return items=[]. Before the first import return 503 rates_not_loaded even for empty favorites. Keep the last successful snapshot and its source date when an upstream load fails. Sorted by code, then currencyId; no pagination. JWT and an uncached Identity session check are required.",
+        "responses": {
+          "200": {
+            "description": "Current data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatesResponse"
+                },
+                "example": {
+                  "sourceDate": "2026-11-10",
+                  "loadedAt": "2026-11-10T14:00:00Z",
+                  "items": [
+                    {
+                      "currencyId": "R01235",
+                      "code": "USD",
+                      "name": "Доллар США",
+                      "rate": "95.12340000",
+                      "isAvailable": true
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication_required, invalid_token, invalid_session",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "authentication_required",
+              "invalid_token",
+              "invalid_session"
+            ],
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Bearer"
+              }
+            }
+          },
+          "500": {
+            "description": "internal_error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "internal_error"
+            ]
+          },
+          "503": {
+            "description": "rates_not_loaded, identity_unavailable, service_unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "rates_not_loaded",
+              "identity_unavailable",
+              "service_unavailable"
+            ]
+          }
+        }
+      }
+    },
+    "/api/finance/favorites/{currencyId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "currencyId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 32,
+            "pattern": "^R[0-9]{1,31}$"
+          }
+        }
+      ],
+      "put": {
+        "operationId": "AddFavorite",
+        "summary": "Add a favorite",
+        "description": "No request body. Existing favorite returns 204 even when unavailable. Otherwise unknown currency returns 404, unavailable currency 409. Creates no duplicate pairs.",
+        "responses": {
+          "204": {
+            "description": "Favorite exists; no body."
+          },
+          "400": {
+            "description": "validation_failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "validation_failed"
+            ]
+          },
+          "404": {
+            "description": "currency_not_found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "currency_not_found"
+            ]
+          },
+          "409": {
+            "description": "currency_unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "currency_unavailable"
+            ]
+          },
+          "401": {
+            "description": "authentication_required, invalid_token, invalid_session",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "authentication_required",
+              "invalid_token",
+              "invalid_session"
+            ],
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Bearer"
+              }
+            }
+          },
+          "500": {
+            "description": "internal_error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "internal_error"
+            ]
+          },
+          "503": {
+            "description": "identity_unavailable, service_unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "identity_unavailable",
+              "service_unavailable"
+            ]
+          }
+        }
+      },
+      "delete": {
+        "operationId": "RemoveFavorite",
+        "summary": "Remove a favorite",
+        "description": "No request body. Returns 204 even when the favorite or a well-formed currency ID does not exist.",
+        "responses": {
+          "204": {
+            "description": "Favorite absent; no body."
+          },
+          "400": {
+            "description": "validation_failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "validation_failed"
+            ]
+          },
+          "401": {
+            "description": "authentication_required, invalid_token, invalid_session",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "authentication_required",
+              "invalid_token",
+              "invalid_session"
+            ],
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Bearer"
+              }
+            }
+          },
+          "500": {
+            "description": "internal_error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "internal_error"
+            ]
+          },
+          "503": {
+            "description": "identity_unavailable, service_unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "x-error-codes": [
+              "identity_unavailable",
+              "service_unavailable"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "RS256; issuer currency-rates-identity; audience currency-rates-api. Default TTL 60 minutes, clock skew 0. Session must be active; current-session logout is immediate."
+      }
+    },
+    "schemas": {
+      "ProblemDetails": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "instance",
+          "code",
+          "traceId"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "about:blank"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "detail": {
+            "type": "string",
+            "description": "Safe English message; no exception details or secrets."
+          },
+          "instance": {
+            "type": "string",
+            "description": "Request path."
+          },
+          "code": {
+            "type": "string"
+          },
+          "traceId": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "example": {
+          "type": "about:blank",
+          "title": "Service Unavailable",
+          "status": 503,
+          "detail": "Rates have not been loaded yet.",
+          "instance": "/api/finance/rates",
+          "code": "rates_not_loaded",
+          "traceId": "example-trace"
+        }
+      },
+      "CurrencyResponse": {
+        "type": "object",
+        "required": [
+          "currencyId",
+          "code",
+          "name"
+        ],
+        "properties": {
+          "currencyId": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 32,
+            "pattern": "^R[0-9]{1,31}$"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "\\S"
+          }
+        }
+      },
+      "FavoriteResponse": {
+        "type": "object",
+        "required": [
+          "currencyId",
+          "code",
+          "name",
+          "isAvailable"
+        ],
+        "properties": {
+          "currencyId": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 32,
+            "pattern": "^R[0-9]{1,31}$"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "\\S"
+          },
+          "isAvailable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CurrencyRateResponse": {
+        "description": "Available items have a positive rate; unavailable items have rate=null. Never substitute an old rate.",
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "currencyId",
+              "code",
+              "name",
+              "rate",
+              "isAvailable"
+            ],
+            "properties": {
+              "currencyId": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 32,
+                "pattern": "^R[0-9]{1,31}$"
+              },
+              "code": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "pattern": "\\S"
+              },
+              "rate": {
+                "type": "string",
+                "pattern": "^(?!0+([.]0+)?$)[0-9]{1,12}([.][0-9]{1,8})?$",
+                "description": "Positive RUB per one unit, less than 10^12; invariant decimal, never a JSON number."
+              },
+              "isAvailable": {
+                "type": "boolean",
+                "enum": [
+                  true
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "currencyId",
+              "code",
+              "name",
+              "rate",
+              "isAvailable"
+            ],
+            "properties": {
+              "currencyId": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 32,
+                "pattern": "^R[0-9]{1,31}$"
+              },
+              "code": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "pattern": "\\S"
+              },
+              "rate": {
+                "type": "string",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              },
+              "isAvailable": {
+                "type": "boolean",
+                "enum": [
+                  false
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "RatesResponse": {
+        "type": "object",
+        "required": [
+          "sourceDate",
+          "loadedAt",
+          "items"
+        ],
+        "properties": {
+          "sourceDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "loadedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$",
+            "description": "UTC ISO 8601 timestamp ending in Z."
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CurrencyRateResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}

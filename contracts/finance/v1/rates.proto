@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package currencyrates.finance.v1;
+option csharp_namespace = "CurrencyRates.Contracts.Finance.V1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// Internal only: verified HTTPS/HTTP2 and metadata x-service-key (Worker key).
+// Maximum message size: 1 MiB. Application errors include trailer code;
+// library/transport errors may not. Clients must first inspect gRPC StatusCode.
+service RateImportService {
+  // Read BEFORE fetching XML. Default deadline: 5 seconds.
+  rpc GetImportState (google.protobuf.Empty) returns (ImportState);
+
+  // Default deadline: 10 seconds. Validate/canonicalize, check known batch_id,
+  // then compare expected_snapshot_version for EVERY new batch before classifying
+  // its date/content. ABORTED requires re-reading state AND re-fetching XML.
+  // Retries after UNAVAILABLE/DEADLINE_EXCEEDED reuse the unchanged request.
+  // Known ID + same canonical request returns the original response, before CAS.
+  // Known ID + different request: ALREADY_EXISTS (code=batch_id_conflict).
+  // Invalid payload: INVALID_ARGUMENT. No partial writes.
+  rpc ImportRates (ImportRatesRequest) returns (ImportRatesResponse);
+}
+
+message ImportState {
+  // Zero means no snapshot: source_date empty and loaded_at absent.
+  // Positive means both a valid source_date and loaded_at are mandatory.
+  // Incremented only when a snapshot is APPLIED.
+  uint64 snapshot_version = 1;
+  // Strict YYYY-MM-DD, source date, not the download date.
+  string source_date = 2;
+  google.protobuf.Timestamp loaded_at = 3;
+}
+
+message CurrencyRate {
+  // R followed by 1..31 ASCII digits; unique within the batch.
+  string currency_id = 1;
+  // Exactly three uppercase ASCII letters; unique within the batch.
+  string code = 2;
+  // 1..200 characters, not whitespace-only.
+  string name = 3;
+  // Positive RUB per unit, < 10^12, at most 12 integer and 8 fractional digits.
+  // Invariant decimal string without sign, spaces or exponent. Worker emits
+  // exactly 8 fractional digits, rounding Value/Nominal away from zero at ties.
+  string rate = 4;
+}
+
+message ImportRatesRequest {
+  // New non-empty UUID per new request; immutable throughout transport retries.
+  string batch_id = 1;
+  uint64 expected_snapshot_version = 2;
+  // Strict YYYY-MM-DD. Future source dates are not rejected merely as future.
+  string source_date = 3;
+  // Required valid timestamp; audit only, never a correction ordering key.
+  google.protobuf.Timestamp fetched_at = 4;
+  // Complete non-empty snapshot (1..1000 currencies), never a filtered subset.
+  repeated CurrencyRate rates = 5;
+}
+
+enum ImportOutcome {
+  // Not a successful result.
+  IMPORT_OUTCOME_UNSPECIFIED = 0;
+  IMPORT_OUTCOME_APPLIED = 1;
+  IMPORT_OUTCOME_UNCHANGED = 2;
+  IMPORT_OUTCOME_IGNORED_OLDER = 3;
+}
+
+message ImportRatesResponse {
+  // Classification only after CAS succeeds for a new batch.
+  ImportOutcome outcome = 1;
+  // Required. Original resulting state on an idempotent replay, not latest state.
+  ImportState state = 2;
+}

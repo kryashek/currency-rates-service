@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package currencyrates.identity.v1;
+option csharp_namespace = "CurrencyRates.Contracts.Identity.V1";
+
+// Internal only: HTTP/2 over verified TLS, metadata x-service-key (Finance key).
+// Default deadline: 2 seconds, no retries and no positive session cache.
+// Application errors include a trailer named code; transport errors may omit it.
+service SessionService {
+  // Invalid IDs: INVALID_ARGUMENT. Inactive, expired, unknown or foreign session:
+  // OK with is_valid=false. Dependency failure: UNAVAILABLE, never is_valid=false.
+  rpc ValidateSession (ValidateSessionRequest) returns (ValidateSessionResponse);
+}
+
+message ValidateSessionRequest {
+  // Non-empty UUID strings in D format, taken from verified JWT sub and sid.
+  string user_id = 1;
+  string session_id = 2;
+}
+
+message ValidateSessionResponse {
+  bool is_valid = 1;
+}
