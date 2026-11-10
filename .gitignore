@@ -1,0 +1,40 @@
+# Build and test output
+**/bin/
+**/obj/
+**/TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.binlog
+artifacts/
+
+# Local tools and SDKs
+.tools/
+
+# IDE and user settings
+.vs/
+.idea/
+*.user
+*.suo
+*.sln.docstates
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+**/appsettings.*.local.json
+*.pfx
+*.p12
+*.key
+
+# Runtime output
+*.log
+logs/
+
+# Local agent instructions, plans and working documentation
+**/*.md
+!/README.md
+.agents/
+.codex/
+.Codex/
+.claude/

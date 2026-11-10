@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../../Services/Identity/CurrencyRates.Identity.Infrastructure/CurrencyRates.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="../../Services/Finance/CurrencyRates.Finance.Infrastructure/CurrencyRates.Finance.Infrastructure.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+</Project>
