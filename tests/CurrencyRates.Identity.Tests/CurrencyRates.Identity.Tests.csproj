@@ -14,4 +14,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Services/Identity/CurrencyRates.Identity.Api/CurrencyRates.Identity.Api.csproj" />
+    <ProjectReference Include="../../src/Services/Finance/CurrencyRates.Finance.Infrastructure/CurrencyRates.Finance.Infrastructure.csproj" Aliases="SessionClient" />
+    <PackageReference Include="Microsoft.OpenApi.Readers" />
+    <Content Include="../../contracts/identity/v1/openapi.json"
+             Link="Contracts/openapi.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

@@ -3,4 +3,12 @@
     <ProjectReference Include="../CurrencyRates.Finance.Application/CurrencyRates.Finance.Application.csproj" />
     <ProjectReference Include="../CurrencyRates.Finance.Infrastructure/CurrencyRates.Finance.Infrastructure.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" />
+    <PackageReference Include="Grpc.AspNetCore.Server" />
+    <PackageReference Include="Grpc.Tools" PrivateAssets="all" />
+    <Protobuf Include="../../../../contracts/finance/v1/rates.proto"
+              ProtoRoot="../../../../contracts" Link="Protos/finance/v1/rates.proto"
+              GrpcServices="Server" />
+  </ItemGroup>
 </Project>

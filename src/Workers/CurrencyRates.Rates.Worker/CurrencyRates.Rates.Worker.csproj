@@ -5,4 +5,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" />
+    <PackageReference Include="Grpc.Net.Client" />
+    <PackageReference Include="Grpc.Tools" PrivateAssets="all" />
+    <Protobuf Include="../../../contracts/finance/v1/rates.proto"
+              ProtoRoot="../../../contracts" Link="Protos/finance/v1/rates.proto"
+              GrpcServices="Client" />
+  </ItemGroup>
 </Project>
