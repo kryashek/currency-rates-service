@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../CurrencyRates.Identity.Application/CurrencyRates.Identity.Application.csproj" />
+  </ItemGroup>
+</Project>

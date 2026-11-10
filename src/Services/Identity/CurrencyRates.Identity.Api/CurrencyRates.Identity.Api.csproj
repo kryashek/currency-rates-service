@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="../CurrencyRates.Identity.Application/CurrencyRates.Identity.Application.csproj" />
+    <ProjectReference Include="../CurrencyRates.Identity.Infrastructure/CurrencyRates.Identity.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
