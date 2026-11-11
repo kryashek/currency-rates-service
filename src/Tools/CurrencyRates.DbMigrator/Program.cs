@@ -1,2 +1,3 @@
-Console.Error.WriteLine("Database migrations are not implemented yet. No database changes were made.");
-return 2;
+using CurrencyRates.DbMigrator;
+
+return await MigrationRunner.RunAsync(Environment.GetEnvironmentVariable("ConnectionStrings__Migrator"));
